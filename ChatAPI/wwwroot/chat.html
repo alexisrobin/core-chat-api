@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Test</title>
+</head>
+<body>
+    <div id="messages-container">
+
+    </div>
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.2.min.js"></script>
+    <script src="signalr/hubs"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            $.get("http://localhost:51731/api/chats/1/messages")
+                .done(function (messages) {
+                    messages.forEach(function(message){
+                        $("#messages-container").append('<span>' + message.content + '</span><br/>');
+                    });
+                });
+
+            // Retrieving proxy.
+            var chat = $.connection.chatHub;
+
+            // Implementing function(s) that the hub can call.
+            chat.client.addMessage = function (message) {
+                console.log(message);
+            };
+
+            // Starting connection with the hub.
+            $.connection.hub.start().done(function () {
+                chat.server.connectionToChats(1);
+            });
+        });
+    </script>
+</body>
+</html>
